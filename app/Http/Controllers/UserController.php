@@ -6,11 +6,16 @@ use App\Models\Quiz;
 use App\Models\UserAnswer;
 use App\Models\Question;
 use App\Models\Answer;
+use App\Models\QuizAttempt; // <--- PENTING: Import model riwayat/attempt
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
+    // ==========================================
+    // BAGIAN WEB (Browser)
+    // ==========================================
+
     public function showQuiz($id)
     {
         $quiz = Quiz::with('questions.answers')->findOrFail($id);
@@ -69,7 +74,9 @@ class UserController extends Controller
 
         $percentage = $total > 0 ? ($score / $total) * 100 : 0;
 
-        // You can save the score in a quiz_attempts table or similar if needed
+        // NOTE: Untuk Web, kamu belum menyimpan ke QuizAttempt di sini.
+        // Jika nanti API History kosong, berarti kamu harus menambahkan logic
+        // QuizAttempt::create([...]) di sini juga.
 
         return redirect()->route('quiz.result', ['id' => $id])->with('score', $percentage);
     }
@@ -97,5 +104,38 @@ class UserController extends Controller
     {
         $quizzes = Quiz::orderBy('date', 'desc')->get();
         return view('user.quiz_list', compact('quizzes'));
+    }
+
+
+    // ==========================================
+    // BAGIAN API (Mobile Flutter)
+    // ==========================================
+
+    public function apiListQuizzes()
+    {
+        // Mengambil semua data kuis dari terbaru
+        $quizzes = Quiz::latest()->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Daftar Kuis Tersedia',
+            'data'    => $quizzes
+        ], 200);
+    }
+
+    public function apiQuizHistory(Request $request)
+    {
+        // Mengambil riwayat skor user
+        // Pastikan tabel/model QuizAttempt sudah ada datanya
+        $history = QuizAttempt::where('user_id', $request->user()->id)
+            ->with('quiz') // Load data kuis terkait
+            ->latest()
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Riwayat Kuis User',
+            'data'    => $history
+        ], 200);
     }
 }

@@ -5,6 +5,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\Api\GeminiChatController;
+// Tambahkan Import Controller ini
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\UserController;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -16,16 +20,33 @@ use App\Http\Controllers\Api\GeminiChatController;
 |
 */
 
-// Route Auth Public (Bisa diakses tanpa login)
+// === ROUTE PUBLIC (Tanpa Login) ===
 Route::post('/login', [AuthController::class, 'loginApi']);
 Route::post('/register', [AuthController::class, 'registerApi']);
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::post('/chat', [GeminiChatController::class, 'chat']);
-
-// Rute untuk Artikel Mobile App
+// Route Artikel (Mobile App)
 Route::get('/artikel', [ArtikelController::class, 'apiIndex']);
 Route::get('/artikel/{slug}', [ArtikelController::class, 'apiShow']);
+
+
+// === ROUTE PRIVATE (Harus Login / Punya Token) ===
+Route::middleware('auth:sanctum')->group(function () {
+
+    // 1. User & Profile
+    Route::get('/user', function (Request $request) {
+        return $request->user();
+    });
+
+    // Ini memperbaiki error: api/profile
+    Route::get('/profile', [ProfileController::class, 'apiIndex']);
+
+    // 2. Chat AI
+    Route::post('/chat', [GeminiChatController::class, 'chat']);
+
+    // 3. Quiz (Mobile App)
+    // Ini memperbaiki error: api/quizzes
+    Route::get('/quizzes', [UserController::class, 'apiListQuizzes']);
+
+    // Ini memperbaiki error: api/quiz-history
+    Route::get('/quiz-history', [UserController::class, 'apiQuizHistory']);
+});

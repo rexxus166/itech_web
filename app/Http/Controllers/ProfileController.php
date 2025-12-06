@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Validator;
 
 class ProfileController extends Controller
 {
+    // ==========================================
+    // BAGIAN WEB (Browser)
+    // ==========================================
+
     // Menampilkan halaman profile
     public function index()
     {
@@ -41,5 +45,20 @@ class ProfileController extends Controller
         $user->save();
 
         return redirect()->route('profile.index')->with('success', 'Profile berhasil diperbarui!');
+    }
+
+    // ==========================================
+    // BAGIAN API (Mobile Flutter)
+    // ==========================================
+
+    public function apiIndex(Request $request)
+    {
+        return response()->json([
+            'success' => true,
+            'message' => 'Detail Profil User',
+            'data'    => [
+                'user' => $request->user()
+            ]
+        ], 200);
     }
 }
