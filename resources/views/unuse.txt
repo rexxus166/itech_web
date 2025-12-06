@@ -1,0 +1,80 @@
+<!-- Technology Icons Section -->
+<div class="row text-center justify-content-center g-4">
+    {{-- C# --}}
+    <div class="col-md-2 col-6">
+        <a href="(', 'csharp') }}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <img src="{{ asset('images/C.png') }}" class="img-fluid" alt="C#">
+                    <p class="mt-2 mb-0 small">C#</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {{-- Laravel --}}
+    <div class="col-md-2 col-6">
+        <a href="(', 'laravel') }}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <img src="{{ asset('images/laravel.png') }}" class="img-fluid" alt="Laravel">
+                    <p class="mt-2 mb-0 small">Laravel</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {{-- Godot --}}
+    <div class="col-md-2 col-6">
+        <a href="(', 'godot') }}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <img src="{{ asset('images/godot.png') }}" class="img-fluid" alt="Godot">
+                    <p class="mt-2 mb-0 small">Godot</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {{-- Python --}}
+    <div class="col-md-2 col-6">
+        <a href="(', 'python') }}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <img src="{{ asset('images/python.png') }}" class="img-fluid" alt="Python">
+                    <p class="mt-2 mb-0 small">Python</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {{-- Java --}}
+    <div class="col-md-2 col-6">
+        <a href="(', 'java') }}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <img src="{{ asset('images/java.png') }}" class="img-fluid" alt="Java">
+                    <p class="mt-2 mb-0 small">Java</p>
+                </div>
+            </div>
+        </a>
+    </div>
+
+    {{-- Web Development --}}
+    <div class="col-md-2 col-6">
+        <a href="(', 'web-development') }}" class="text-decoration-none text-dark">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <img src="{{ asset('images/html.jpg') }}" class="img-fluid" alt="Web Development">
+                    <p class="mt-2 mb-0 small">Web Development</p>
+                </div>
+            </div>
+        </a>
+    </div>
+</div>
+
+
+
+<li class="mb-2"><a href="/tutorials" class="text-white text-decoration-none">Tutorials</a></li>
+                        <li class="mb-2"><a href="/blog" class="text-white text-decoration-none">Blog</a></li>
+                        <li><a href="/contact" class="text-white text-decoration-none">Contact</a></li>
