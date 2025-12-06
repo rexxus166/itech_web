@@ -47,18 +47,15 @@ class ProfileController extends Controller
         return redirect()->route('profile.index')->with('success', 'Profile berhasil diperbarui!');
     }
 
-    // ==========================================
-    // BAGIAN API (Mobile Flutter)
-    // ==========================================
-
     public function apiIndex(Request $request)
     {
+        // PERBAIKAN: Langsung kirim object user tanpa dibungkus key 'user' lagi
+        // Supaya Flutter bisa langsung baca: response.data.name
+
         return response()->json([
             'success' => true,
             'message' => 'Detail Profil User',
-            'data'    => [
-                'user' => $request->user()
-            ]
+            'data'    => $request->user()
         ], 200);
     }
 }
