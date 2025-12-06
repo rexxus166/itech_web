@@ -107,10 +107,35 @@ class UserController extends Controller
     // BAGIAN API (Mobile Flutter)
     // ==========================================
 
-    public function apiListQuizzes()
+    // ==========================================
+    // BAGIAN API (Mobile Flutter)
+    // ==========================================
+
+    // Update fungsi ini: Tambahkan Request $request di parameter
+    public function apiListQuizzes(Request $request)
     {
-        // Mengambil semua data kuis dari terbaru
+        $userId = $request->user()->id;
+
+        // 1. Ambil semua data kuis dari yang terbaru
         $quizzes = Quiz::latest()->get();
+
+        // 2. Modifikasi setiap kuis untuk menyisipkan skor user
+        $quizzes->transform(function ($quiz) use ($userId) {
+
+            // Cari skor TERTINGGI (max) dari user ini untuk kuis ini
+            $bestScore = QuizAttempt::where('quiz_id', $quiz->id)
+                ->where('user_id', $userId)
+                ->max('score');
+
+            // Masukkan skor ke dalam object quiz
+            // Jika belum pernah mengerjakan ($bestScore null), set jadi 0
+            $quiz->score = $bestScore ?? 0;
+
+            // Opsional: Bisa juga tambah info apakah sudah completed
+            $quiz->completed = ($bestScore !== null);
+
+            return $quiz;
+        });
 
         return response()->json([
             'success' => true,
