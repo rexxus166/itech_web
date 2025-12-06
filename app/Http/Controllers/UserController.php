@@ -74,10 +74,6 @@ class UserController extends Controller
 
         $percentage = $total > 0 ? ($score / $total) * 100 : 0;
 
-        // NOTE: Untuk Web, kamu belum menyimpan ke QuizAttempt di sini.
-        // Jika nanti API History kosong, berarti kamu harus menambahkan logic
-        // QuizAttempt::create([...]) di sini juga.
-
         return redirect()->route('quiz.result', ['id' => $id])->with('score', $percentage);
     }
 
@@ -126,7 +122,6 @@ class UserController extends Controller
     public function apiQuizHistory(Request $request)
     {
         // Mengambil riwayat skor user
-        // Pastikan tabel/model QuizAttempt sudah ada datanya
         $history = QuizAttempt::where('user_id', $request->user()->id)
             ->with('quiz') // Load data kuis terkait
             ->latest()
@@ -144,11 +139,8 @@ class UserController extends Controller
     // ==========================================
 
     // 3. MULAI KUIS (Ambil Soal)
-    // Sesuai error: api/quizzes/{id}/start
     public function apiStartQuiz($id)
     {
-        // Ambil quiz beserta pertanyaan dan jawabannya
-        // Pastikan relasi 'questions' dan 'answers' ada di Model Quiz
         $quiz = Quiz::with(['questions.answers'])->find($id);
 
         if (!$quiz) {
@@ -165,13 +157,12 @@ class UserController extends Controller
         ], 200);
     }
 
-    // 4. SUBMIT JAWABAN
-    // Sesuai rute: api/quizzes/{id}/submit
+    // 4. SUBMIT JAWABAN (UPDATE PENTING DISINI)
     public function apiSubmitQuiz(Request $request, $id)
     {
         // Validasi input
         $request->validate([
-            'answers' => 'required|array', // Format: [question_id => answer_id]
+            'answers' => 'required|array',
         ]);
 
         $quiz = Quiz::with('questions.answers')->findOrFail($id);
@@ -184,12 +175,10 @@ class UserController extends Controller
 
         // Loop pertanyaan kuis
         foreach ($quiz->questions as $question) {
-            // Cek apakah user menjawab pertanyaan ini
             if (isset($request->answers[$question->id])) {
                 $answerId = $request->answers[$question->id];
                 $answer = Answer::find($answerId);
 
-                // Cek jawaban benar
                 if ($answer && $answer->is_correct) {
                     $score++;
                     $correctCount++;
@@ -197,42 +186,32 @@ class UserController extends Controller
                     $incorrectCount++;
                 }
 
-                // Simpan detail jawaban per soal (UserAnswer)
                 UserAnswer::create([
                     'user_id' => $userId,
                     'question_id' => $question->id,
                     'answer_id' => $answerId,
                 ]);
             } else {
-                // Jika tidak dijawab, dianggap salah
                 $incorrectCount++;
             }
         }
 
-        // Hitung nilai persentase (0-100)
         $percentage = $totalQuestions > 0 ? ($score / $totalQuestions) * 100 : 0;
 
-        // Simpan ke Tabel quiz_attempts
-        // SESUAI STRUKTUR TABEL KAMU: 
-        // id, user_id, quiz_id, score, correct_answers_count, incorrect_answers_count
-        QuizAttempt::create([
+        // SIMPAN DAN TAMPUNG KE VARIABEL $attempt
+        $attempt = QuizAttempt::create([
             'user_id' => $userId,
             'quiz_id' => $id,
             'score'   => $percentage,
             'correct_answers_count'   => $correctCount,
             'incorrect_answers_count' => $incorrectCount,
-            'completed_at' => now(), // Tambahan timestamp selesai
+            'completed_at' => now(),
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Kuis Selesai',
-            'data'    => [
-                'score' => $percentage,
-                'correct' => $correctCount,
-                'incorrect' => $incorrectCount,
-                'total' => $totalQuestions
-            ]
+            'data'    => $attempt // <--- KIRIM FULL OBJECT
         ], 200);
     }
 }
