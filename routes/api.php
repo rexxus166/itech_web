@@ -37,16 +37,16 @@ Route::middleware('auth:sanctum')->group(function () {
         return $request->user();
     });
 
-    // Ini memperbaiki error: api/profile
     Route::get('/profile', [ProfileController::class, 'apiIndex']);
 
-    // 2. Chat AI
     Route::post('/chat', [GeminiChatController::class, 'chat']);
 
-    // 3. Quiz (Mobile App)
     // Ini memperbaiki error: api/quizzes
     Route::get('/quizzes', [UserController::class, 'apiListQuizzes']);
 
-    // Ini memperbaiki error: api/quiz-history
+    // Rute Baru: Untuk Mulai/Ambil Soal Kuis
+    Route::get('/quizzes/{id}/start', [UserController::class, 'apiStartQuiz']);
+    Route::post('/quizzes/{id}/submit', [UserController::class, 'apiSubmitQuiz']);
+
     Route::get('/quiz-history', [UserController::class, 'apiQuizHistory']);
 });
