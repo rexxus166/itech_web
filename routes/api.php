@@ -5,7 +5,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ArtikelController;
 use App\Http\Controllers\Api\GeminiChatController;
-// Tambahkan Import Controller ini
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 
@@ -20,33 +19,58 @@ use App\Http\Controllers\UserController;
 |
 */
 
-// === ROUTE PUBLIC (Tanpa Login) ===
+// ==========================================
+// 1. ROUTE PUBLIC (Bisa diakses tanpa token)
+// ==========================================
+
+// Auth
 Route::post('/login', [AuthController::class, 'loginApi']);
 Route::post('/register', [AuthController::class, 'registerApi']);
 
-// Route Artikel (Mobile App)
+// Artikel (Mobile App)
 Route::get('/artikel', [ArtikelController::class, 'apiIndex']);
 Route::get('/artikel/{slug}', [ArtikelController::class, 'apiShow']);
 
 
-// === ROUTE PRIVATE (Harus Login / Punya Token) ===
+// ==========================================
+// 2. ROUTE PRIVATE (Harus Login / Punya Token)
+// ==========================================
 Route::middleware('auth:sanctum')->group(function () {
 
-    // 1. User & Profile
+    // === USER & PROFILE ===
+
+    // [FIX AUTO LOGIN]
+    // Kita bungkus data user supaya Flutter membacanya sebagai "Success"
     Route::get('/user', function (Request $request) {
-        return $request->user();
+        return response()->json([
+            'success' => true,
+            'message' => 'Data User Berhasil Diambil',
+            'data'    => $request->user()
+        ]);
     });
 
+    // Profil User
     Route::get('/profile', [ProfileController::class, 'apiIndex']);
 
-    Route::post('/chat', [GeminiChatController::class, 'chat']);
 
-    // Ini memperbaiki error: api/quizzes
+    // === QUIZ SYSTEM ===
+
+    // List Semua Kuis
     Route::get('/quizzes', [UserController::class, 'apiListQuizzes']);
 
-    // Rute Baru: Untuk Mulai/Ambil Soal Kuis
+    // [FIX START QUIZ] 
+    // Mengambil detail soal untuk memulai kuis
     Route::get('/quizzes/{id}/start', [UserController::class, 'apiStartQuiz']);
+
+    // Submit Jawaban Kuis
     Route::post('/quizzes/{id}/submit', [UserController::class, 'apiSubmitQuiz']);
 
+    // Riwayat Kuis User
     Route::get('/quiz-history', [UserController::class, 'apiQuizHistory']);
+
+
+    // === FITUR LAIN ===
+
+    // Chat AI (Gemini)
+    Route::post('/chat', [GeminiChatController::class, 'chat']);
 });
